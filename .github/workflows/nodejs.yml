@@ -49,6 +49,7 @@ jobs:
         yarn run macdist
     - name: Set COMPANION_BUILD
       run: |
+        echo COMPANION_VERSION=$(node -e "console.log(require('../package.json').version)") >> $GITHUB_ENV
         echo "COMPANION_BUILD=$(cat BUILD)" >> $GITHUB_ENV
         echo "COMPANION_ARTIFACT=companion-$(cat BUILD)-osx.zip" >> $GITHUB_ENV
     - name: Rename
@@ -73,10 +74,15 @@ jobs:
       run: |
         yarn update
         yarn run windist
-    - name: rename and upload stuff
-      run: node ./tools/build_rename_git.js
-      env:
-        TRAVIS_OS_NAME: win64
-        BITFOCUS_S3: ${{ secrets.BITFOCUS_S3 }}
-        BITFOCUS_KEY: ${{ secrets.BITFOCUS_ACCESS }}
-        BITFOCUS_SECRET: ${{ secrets.BITFOCUS_SECRET }}
+    - name: Set COMPANION_BUILD
+      run: |
+        echo COMPANION_VERSION=$(node -e "console.log(require('../package.json').version)") >> $GITHUB_ENV
+        echo "COMPANION_BUILD=$(cat BUILD)" >> $GITHUB_ENV
+        echo "COMPANION_ARTIFACT=companion-$(cat BUILD)-win64.exe" >> $GITHUB_ENV
+    - name: Rename
+      run: mv -vf ./electron-output/*.exe ./electron-output/$COMPANION_ARTIFACT
+    - name: 'Publish Release'
+      uses: actions/upload-artifact@v2
+      with:
+        name: '${{ env.COMPANION_ARTIFACT }}'
+        path: ./electron-output/*.exe
