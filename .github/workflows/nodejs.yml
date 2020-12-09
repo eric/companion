@@ -80,7 +80,7 @@ jobs:
         echo "COMPANION_BUILD=$(cat BUILD)" >> $GITHUB_ENV
         echo "COMPANION_ARTIFACT=companion-$(cat BUILD)-win64.exe" >> $GITHUB_ENV
     - name: Rename
-      run: mv -vf ./electron-output/*.exe ./electron-output/$COMPANION_ARTIFACT
+      run: mv ./electron-output/*.exe ./electron-output/$COMPANION_ARTIFACT
     - name: 'Publish Release'
       uses: actions/upload-artifact@v2
       with:
