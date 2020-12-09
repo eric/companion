@@ -16,19 +16,22 @@ jobs:
       run: |
         yarn update
         yarn run lindist
-
+    - name: Set COMPANION_BUILD
+      run: |
+        echo COMPANION_VERSION=$(node -e "console.log(require('../package.json').version)") >> $GITHUB_ENV
+        echo "COMPANION_BUILD=$(cat BUILD)" >> $GITHUB_ENV
+        echo "COMPANION_ARTIFACT=companion-$(cat BUILD)-linux.tar.gz" >> $GITHUB_ENV
+    - name: Package
+      run: |
         # manually tar it, to preserve the symlinks
         cd electron-output
-        VERSION=$(node -e "console.log(require('../package.json').version)")
-        mv linux-unpacked companion-$VERSION
-        tar -cvzf companion-$VERSION.tar.gz companion-$VERSION
-    - name: rename and upload stuff
-      run: node ./tools/build_rename_git.js
-      env:
-        TRAVIS_OS_NAME: linux
-        BITFOCUS_S3: ${{ secrets.BITFOCUS_S3 }}
-        BITFOCUS_KEY: ${{ secrets.BITFOCUS_ACCESS }}
-        BITFOCUS_SECRET: ${{ secrets.BITFOCUS_SECRET }}
+        mv linux-unpacked companion-$COMPANION_VERSION
+        tar -cvzf "$COMPANION_ARTIFACT" companion-$COMPANION_VERSION
+    - name: 'Publish Release'
+      uses: actions/upload-artifact@v2
+      with:
+        name: '${{ env.COMPANION_ARTIFACT }}'
+        path: ./electron-output/*.gz
   osx:
     runs-on: macOS-latest
     strategy:
