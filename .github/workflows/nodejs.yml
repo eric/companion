@@ -52,13 +52,21 @@ jobs:
         echo COMPANION_VERSION=$(node -e "console.log(require('./package.json').version)") >> $GITHUB_ENV
         echo "COMPANION_BUILD=$(cat BUILD)" >> $GITHUB_ENV
         echo "COMPANION_ARTIFACT=companion-$(cat BUILD)-osx.zip" >> $GITHUB_ENV
+        echo "COMPANION_ARTIFACT_DMG=companion-$(cat BUILD)-osx.dmg" >> $GITHUB_ENV
     - name: Rename
-      run: mv -vf ./electron-output/*.zip ./electron-output/$COMPANION_ARTIFACT
+      run: |
+        mv -vf ./electron-output/*.zip ./electron-output/$COMPANION_ARTIFACT
+        mv -vf ./electron-output/*.dmg ./electron-output/$COMPANION_ARTIFACT_DMG
     - name: 'Publish Release'
       uses: actions/upload-artifact@v2
       with:
         name: '${{ env.COMPANION_ARTIFACT }}'
         path: ./electron-output/*.zip
+    - name: 'Publish Release dmg'
+      uses: actions/upload-artifact@v2
+      with:
+        name: '${{ env.COMPANION_ARTIFACT_DMG }}'
+        path: ./electron-output/*.dmg
   win64:
     runs-on: windows-latest
     strategy:
