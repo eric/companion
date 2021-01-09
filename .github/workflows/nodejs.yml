@@ -83,11 +83,13 @@ jobs:
         yarn update
         yarn run windist
     - name: Set COMPANION_BUILD
+      shell: bash
       run: |
         echo COMPANION_VERSION=$(node -e "console.log(require('./package.json').version)") >> $GITHUB_ENV
         echo "COMPANION_BUILD=$(cat BUILD)" >> $GITHUB_ENV
         echo "COMPANION_ARTIFACT=companion-$(cat BUILD)-win64.exe" >> $GITHUB_ENV
     - name: Rename
+      shell: bash
       run: mv ./electron-output/*.exe ./electron-output/$COMPANION_ARTIFACT
     - name: 'Publish Release'
       uses: actions/upload-artifact@v2
