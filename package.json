@@ -32,7 +32,10 @@
 			"extraFiles": [
 				{
 					"from": "./node_modules/sharp/vendor/8.10.5/lib",
-					"to": "Frameworks"
+					"to": "Frameworks",
+					"filter": [
+						"!glib-2.0/**/*"
+					]
 				}
 			]
 		},
@@ -94,10 +97,10 @@
 		"dev": "./tools/build_writefile.sh && DEVELOPER=1 electron .",
 		"update": "./tools/update.sh",
 		"pack": "electron-builder --dir",
-		"dist:js": "rm -rf public/js/dist && babel ./public/js/babel --out-dir ./public/js/dist",
-		"dist:prepare": "./tools/build_writefile.sh ; rm -rf electron-output && yarn dist:js",
-		"dist": "yarn dist:prepare && electron-builder install-app-deps && electron-builder",
-		"electron-rebuild": "electron-builder install-app-deps",
+		"dist:js": "rimraf public/js/dist && babel ./public/js/babel --out-dir ./public/js/dist",
+		"dist:prepare": "./tools/build_writefile.sh ; rimraf electron-output && yarn dist:js",
+		"dist": "yarn dist:prepare && yarn electron-rebuild && electron-builder",
+		"electron-rebuild": "yarn dist:prepare:sharp && electron-builder install-app-deps",
 		"testprod": "./node_modules/electron/cli.js .",
 		"macdist": "yarn dist:prepare && yarn dist:prepare:mac && electron-builder --publish=never --mac",
 		"windist": "yarn dist:prepare && yarn dist:prepare:win && electron-builder --publish=never --win",
